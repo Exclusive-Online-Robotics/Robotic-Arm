@@ -1,0 +1,17 @@
+[Unit]
+Description=Robotic Arm Device Port
+Before=nginx.service
+
+[Service]
+Type=simple
+PIDFile=/var/run/xra.pid
+Restart=always
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=RADP
+User=root
+WorkingDirectory=/root
+ExecStart=/usr/bin/node /root/xor_radp.js
+
+[Install]
+WantedBy=multi-user.target

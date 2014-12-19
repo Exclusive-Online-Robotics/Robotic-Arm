@@ -1,0 +1,10 @@
+[Unit]
+Description=MJPEG Stream on port 8080
+
+[Service]
+Type=simple
+PIDFile=/var/run/mjpg_streamer.pid
+ExecStart=/usr/bin/mjpg_streamer -i "input_uvc.so -r 320x240 -f 10"
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,180 @@
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <link rel="stylesheet" href="css/ui-lightness/jquery-ui-1.10.4.custom.css">
+  <link rel="stylesheet" href="css/racp.css">
+</head>
+<body>
+  <div id="header">
+  
+  <br><br><br>
+  <h1 align="center">XOR Robotic Arm Control Panel</h1>
+  
+  <div id="content">
+    <div id="app">
+      <br>
+      
+      <h3 id="connection-status">Connecting...</h3>
+      <p id="warning">Warning: The video stream below downloads A LOT of data, and fast.
+              If you are using a mobile device, make sure you are using WiFi! Click
+              on this message to dismiss it.
+      <p>
+      <img id="video-stream" src="http://onlinerobotics.net:8080/?action=stream">
+      <p id="status" align="center"><p>
+      <i id="countdown"></i>
+
+      <h3>Shoulder Rotation</h3>
+      <div id="rotation"></div>
+      <div class="left-label">Leftmost</div>
+      <div class="right-label">Rightmost</div>
+      <br>
+      
+      <h3>Shoulder Bend</h3>
+      <div id="shoulder"></div>
+      <div class="left-label">Backwards</div>
+      <div class="right-label">Forwards</div>
+      <br>
+      
+      <h3>Elbow Bend</h3>
+      <div id="elbow"></div>
+      <div class="left-label">Bent</div>
+      <div class="right-label">Straight</div>
+      <br>
+      
+      <h3>Wrist Bend</h3>
+      <div id="wrist"></div>
+      <div class="left-label">Backwards</div>
+      <div class="right-label">Forwards</div>
+      <br>
+      
+      <h3>Claw Bend</h3>
+      <div id="claw"></div>
+      <div class="left-label">Open</div>
+      <div class="right-label">Shut</div>
+      <br>
+    </div>
+  </div>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="js/jquery-1.10.2.js"></script>
+  <script src="js/jquery-ui-1.10.4.custom.js"></script>
+  <script src="js/jquery.ui.touch-punch.min.js"></script>
+  <script>
+  $( function() {
+    var radp = io.connect('http://onlinerobotics.net:8000');
+    
+    var countdownTimeoutID = -1;
+    var countdownDateTime = new Date(0,0,0,0,5);
+    
+    radp.on('connect', function(s) {
+      /* Update status labels */
+      $('#connection-status').text('Connected!');
+      $('#connection-status').css('color', 'green');
+      
+      $('#warning').click(function() {
+        $('#warning').hide(400);
+      });
+      
+      /* Start the countdown timer */
+      var secondsString = countdownDateTime.getSeconds().toString();
+      if (secondsString < 10) secondsString = '0' + secondsString;
+      
+      $('#countdown').text(countdownDateTime.getMinutes() + ':' + secondsString + ' remaining');
+      
+      countdownTimeoutID = setInterval(function() {
+        countdownDateTime.setSeconds( countdownDateTime.getSeconds() - 1 );
+        
+        var secondsString = countdownDateTime.getSeconds().toString();
+        if (secondsString < 10) secondsString = '0' + secondsString;
+      
+        $('#countdown').text(countdownDateTime.getMinutes() + ':' + secondsString + ' remaining');
+      }, 1000);
+    });
+    
+	radp.on('debug', function(msg) {
+		console.log('debuggin');
+	  console.log(msg.sercmd);
+	});
+	
+    radp.on('disconnect', function() {
+      clearTimeout(countdownTimeoutID);
+      $('#countdown').text('');
+      $('#connection-status').text('Disconnected');
+      $('#connection-status').css('color', 'red');
+    });
+
+    $('#rotation').slider({
+      slide: function(event, ui) {
+          console.log(ui.value*180/100);
+		  radp.emit('cmd', {
+            'servoNum':0,
+            'angle':ui.value*180/100
+        });
+      }
+    });
+    
+    $('#shoulder').slider({
+      slide: function(event, ui) {
+          console.log(ui.value*180/100);
+          radp.emit('cmd', {
+            'servoNum':1,
+            'angle':ui.value*180/100
+        });
+      }
+    });
+    
+    $('#elbow').slider({
+      slide: function(event, ui) {
+          console.log(ui.value*180/100);
+          radp.emit('cmd', {
+            'servoNum':2,
+            'angle':ui.value*180/100
+        });
+      }
+    });
+    
+    $('#wrist').slider({
+      slide: function(event, ui) {
+          console.log(ui.value*180/100);
+          radp.emit('cmd', {
+            'servoNum':3,
+            'angle':ui.value*180/100
+        });
+      }
+    });
+    
+    $('#claw').slider({
+      slide: function(event, ui) {
+          console.log(ui.value*180/100);
+          radp.emit('cmd', {
+            'servoNum':4,
+            'angle':ui.value*180/100
+        });
+      }
+    });
+    
+    radp.on('status', function(msg) {
+      $('#status').text(msg);
+    });
+    
+    radp.on('fdbk', function(msg) {
+      $('#rotation').slider("value",100*msg.servo0/180);
+      $('#shoulder').slider("value",100*(msg.servo1-40)/140);
+      $('#elbow').slider("value",100*(msg.servo2-15)/165);
+      $('#wrist').slider("value",100*msg.servo3/180);
+      $('#claw').slider("value",msg.servo4);
+    });
+  });
+  
+  $('#video-stream').click(function() {
+    if ( $(this).width() == 320 ) {
+      $(this).width(640);
+      $(this).height(480);
+    } else {
+      $(this).width(320);
+      $(this).height(240);
+    }
+  });
+  </script>
+  </div>
+</body>
+</html>

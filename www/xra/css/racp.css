@@ -1,0 +1,54 @@
+body {
+	background-image: url(/xra/background_image.png);
+	background-repeat: repeat-x; margin-top: 0; 
+	margin-left:0; margin-right:0; 
+	background-color:#e9ede9;
+}
+h1 {
+	color:white;
+}
+h3 {
+	margin:3px 0;
+}
+#header {
+	background-image: url(/xra/header.jpg); 
+	height:61px; 
+	background-repeat:no-repeat; 
+	background-position: center; 
+	margin-top: 0;
+}
+#content {
+	width:100%; 
+	background-color:#e9ede9; 
+	margin-left:0;
+	margin-right:0;
+}
+#app {
+	width:80%;
+	max-width:800px;
+	margin:0 auto;
+}
+#warning {
+	font-weight:700;
+	color:red;
+}
+#video-stream {
+	display:block; 
+	margin-left:auto; 
+	margin-right:auto;
+	width:320px;
+	height:240px;
+	cursor:pointer;
+}
+#status {
+	font-size:1.2em;
+}
+#connecting-label {
+	color:red;
+}
+.left-label {
+	float: left;
+}
+.right-label {
+	float: right;
+}

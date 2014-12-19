@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# This script is used by systemd to start the Robotic Arm Device Port on startup
+
+node xor_radp.js
